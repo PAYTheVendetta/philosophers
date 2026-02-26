@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:36:09 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/22 21:15:24 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/02/26 18:18:23 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,17 @@ int	count_eating(t_phio	**philos, int philo)
 
 int	check_dead(t_phio	*philo)
 {
+	pthread_mutex_lock(philo->rules->dead_mutex);
 	if ((gettimeinmil() - philo->last_meal) >= philo->rules->t_to_dead)
 	{
 		pthread_mutex_lock(philo->rules->print_mutex);
-		pthread_mutex_lock(philo->rules->dead_mutex);
 		philo->rules->finished = 1;
 		printf("%ld %d %s\n", gettimeinmil(), philo->id, MSG_DIE);
 		pthread_mutex_unlock(philo->rules->dead_mutex);
 		pthread_mutex_unlock(philo->rules->print_mutex);
 		return (1);
 	}
+	pthread_mutex_unlock(philo->rules->dead_mutex);
 	return (0);
 }
 

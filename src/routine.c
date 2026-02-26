@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:29:01 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/22 21:15:02 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/02/26 19:03:39 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ void	eat(t_phio *philo)
 	pthread_mutex_unlock(philo->rules->dead_mutex);
 	take_forks(philo, 0);
 	waiter(philo, 0);
-	usleep(100);
 	print_state(philo, MSG_SLEEP);
 	usleep(philo->rules->t_to_sleep * 1000);
 }
@@ -44,7 +43,9 @@ void	*live(void *arg)
 	n = 0;
 	if (philo->id % 2 == 0)
 		usleep(3000);
+	pthread_mutex_lock(philo->rules->dead_mutex);
 	philo->last_meal = gettimeinmil();
+	pthread_mutex_unlock(philo->rules->dead_mutex);
 	pthread_mutex_lock(philo->rules->dead_mutex);
 	while (philo->rules->finished == 0)
 	{

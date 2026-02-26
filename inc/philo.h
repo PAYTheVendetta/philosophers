@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 12:29:23 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/22 21:15:37 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/02/26 18:18:28 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct s_rules
 	long			must_eat;
 	int				in_for_phase;
 	int				finished;
+	int				*list;
 	long			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*print_mutex;

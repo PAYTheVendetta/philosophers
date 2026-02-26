@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:50:36 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/22 19:51:44 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/02/26 18:18:27 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,29 +35,31 @@ void	destroy_mutex(t_rules **rules, t_clear *clear)
 
 int	freedi(t_phio **philos, t_rules **rules, int n_thread, t_clear *clear)
 {
-	if (n_thread != 0 && *rules != NULL)
+	if (rules != NULL && n_thread != 0 && *rules != NULL)
 	{
 		pthread_mutex_lock((*rules)->dead_mutex);
 		(*rules)->finished = 1;
 		pthread_mutex_unlock((*rules)->dead_mutex);
 	}
-	while (n_thread != 0 && *philos != NULL)
+	while (rules != NULL && n_thread != 0 && *philos != NULL)
 		pthread_join((*philos)[n_thread-- - 1].thread, NULL);
-	if (clear != NULL)
+	if (rules != NULL && clear != NULL)
 		destroy_mutex(rules, clear);
-	if ((*rules)->print_mutex != NULL)
+	if (rules != NULL && (*rules)->print_mutex != NULL)
 		safe_free((void **)&(*rules)->print_mutex);
-	if ((*rules)->dead_mutex != NULL)
+	if (rules != NULL && (*rules)->dead_mutex != NULL)
 		safe_free((void **)&(*rules)->dead_mutex);
-	if ((*rules)->waiter_mutex != NULL)
+	if (rules != NULL && (*rules)->waiter_mutex != NULL)
 		safe_free((void **)&(*rules)->waiter_mutex);
-	if ((*rules)->forks != NULL)
+	if (rules != NULL && (*rules)->list != NULL)
+		safe_free((void **)&(*rules)->list);
+	if (rules != NULL && (*rules)->forks != NULL)
 		safe_free((void **)&(*rules)->forks);
 	if (clear != NULL)
 		safe_free((void **)&clear);
-	if (*rules != NULL)
+	if (rules != NULL && *rules != NULL)
 		safe_free((void **)rules);
-	if (*philos != NULL)
+	if (philos != NULL && *philos != NULL)
 		safe_free((void **)philos);
 	return (-1);
 }

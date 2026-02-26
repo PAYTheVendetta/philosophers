@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:28:43 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/22 20:18:47 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/02/26 18:21:17 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,10 @@ int	init(char **argv, t_rules **rules, int argc, t_phio	**philos)
 	(*rules)->finished = 0;
 	(*rules)->in_for_phase = 0;
 	(*rules)->must_eat = -1;
+	(*rules)->list = malloc(sizeof(int) * (*rules)->nb_philos);
+	if (!(*rules)->list)
+		return (-1);
+	memset((*rules)->list, 0, (sizeof(int) * (*rules)->nb_philos));
 	if (argc == 6)
 		(*rules)->must_eat = ft_atoi(argv[4]);
 	if (memory_reserve(philos, rules) == -1)
