@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:49:36 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/17 17:50:09 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/02 18:24:47 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	validate(char **argv, int argc)
 	int		num_arg;
 	char	*to_validate;
 
-	num_arg = 0;
+	num_arg = -1;
 	while (++num_arg < argc)
 	{
 		to_validate = argv[num_arg];

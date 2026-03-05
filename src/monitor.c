@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:36:09 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/26 18:18:23 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/02 19:22:15 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,33 +61,38 @@ void	check_monitor(t_phio *philos)
 	int	iter;
 
 	iter = 0;
-	pthread_mutex_lock(philos->rules->dead_mutex);
-	while (philos->rules->nb_philos > iter && philos->rules->finished != 1)
+	while (philos->rules->nb_philos > iter)
 	{
+		pthread_mutex_lock(philos->rules->dead_mutex);
+		if (philos->rules->finished == 1)
+		{
+			pthread_mutex_unlock(philos->rules->dead_mutex);
+			return ;
+		}
 		pthread_mutex_unlock(philos->rules->dead_mutex);
 		if (count_eating(&philos, iter) == 1)
 		{
 			iter++;
+			pthread_mutex_lock(philos->rules->dead_mutex);
 			continue ;
 		}
 		check_dead(&philos[iter]);
 		iter++;
 		usleep(10);
-		pthread_mutex_lock(philos->rules->dead_mutex);
 	}
-	if (philos->rules->finished == 1 || philos->rules->nb_philos == iter)
-		pthread_mutex_unlock(philos->rules->dead_mutex);
 }
 
 void	monitor(t_phio *philos)
 {
-	pthread_mutex_lock(philos->rules->dead_mutex);
-	while (philos->rules->finished != 1)
+	while (1)
 	{
+		pthread_mutex_lock(philos->rules->dead_mutex);
+		if (philos->rules->finished == 1)
+		{
+			pthread_mutex_unlock(philos->rules->dead_mutex);
+			break ;
+		}
 		pthread_mutex_unlock(philos->rules->dead_mutex);
 		check_monitor(philos);
-		pthread_mutex_lock(philos->rules->dead_mutex);
 	}
-	if (philos->rules->finished == 1)
-		pthread_mutex_unlock(philos->rules->dead_mutex);
 }

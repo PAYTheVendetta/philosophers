@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 12:29:23 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/26 18:18:28 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/02 20:12:25 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct s_rules
 	int				in_for_phase;
 	int				finished;
 	int				*list;
+	int				*forks_list;
 	long			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*print_mutex;
@@ -60,7 +61,9 @@ typedef struct s_phio
 	long			last_meal;
 	int				meals_eaten;
 	pthread_mutex_t	*left_fork;
+	int				*id_left_fork;
 	pthread_mutex_t	*right_fork;
+	int				*id_right_fork;
 	t_rules			*rules;
 	t_clear			*clear;
 }	t_phio;

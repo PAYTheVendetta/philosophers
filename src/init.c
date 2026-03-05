@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:28:43 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/26 18:21:17 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/03 14:50:58 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,10 @@ t_clear	*init_clear(void)
 	t_clear	*clear;
 
 	clear = malloc(sizeof(t_clear));
+	if (!clear)
+		return (NULL);
 	clear->dead_mutex_inited = 0;
-	clear->forks_mutex_inited = 0;
+	clear->forks_mutex_inited = -1;
 	clear->print_mutex_inited = 0;
 	clear->waiter_mutex_inited = 0;
 	return (clear);
@@ -53,6 +55,8 @@ int	start_thread(t_phio **philos, t_rules *rules)
 	t_clear	*clear;
 
 	clear = init_clear();
+	if (!clear)
+		return (freedi(philos, &rules, 0, clear));
 	if (create_mutex(philos, rules, clear) == -1)
 		return (-1);
 	n = -1;
@@ -65,6 +69,8 @@ int	start_thread(t_phio **philos, t_rules *rules)
 		(*philos)[n].last_meal = gettimeinmil();
 		(*philos)[n].meals_eaten = 0;
 		(*philos)[n].clear = clear;
+		(*philos)[n].id_left_fork = &rules->forks_list[n];
+		(*philos)[n].id_right_fork = &rules->forks_list[(n + 1) % rules->nb_philos];
 		if (pthread_create(&(*philos)[n].thread, NULL, live, &(*philos)[n]))
 			return (freedi(philos, &rules, n, clear));
 	}
@@ -94,20 +100,35 @@ int	memory_reserve(t_phio	**philos, t_rules **rules)
 
 int	init(char **argv, t_rules **rules, int argc, t_phio	**philos)
 {
-	memset(*rules, '\0', sizeof(t_rules));
+	if (validate(argv, (argc - 1)))
+		return (freedi(NULL, rules, 0, NULL));
 	(*rules)->nb_philos = ft_atoi(argv[0]);
+	if ((*rules)->nb_philos <= 0)
+		return (freedi(NULL, rules, 0 ,NULL));
 	(*rules)->t_to_dead = ft_atoi(argv[1]);
+	if ((*rules)->t_to_dead <= 0)
+		return (freedi(NULL, rules, 0 ,NULL));
 	(*rules)->t_to_eat = ft_atoi(argv[2]);
+	if ((*rules)->t_to_eat <= 0)
+		return (freedi(NULL, rules, 0 ,NULL));
 	(*rules)->t_to_sleep = ft_atoi(argv[3]);
+	if ((*rules)->t_to_sleep <= 0)
+		return (freedi(NULL, rules, 0 ,NULL));
 	(*rules)->finished = 0;
 	(*rules)->in_for_phase = 0;
 	(*rules)->must_eat = -1;
-	(*rules)->list = malloc(sizeof(int) * (*rules)->nb_philos);
+	(*rules)->list = malloc(sizeof(int) * ((*rules)->nb_philos + 1));
 	if (!(*rules)->list)
-		return (-1);
-	memset((*rules)->list, 0, (sizeof(int) * (*rules)->nb_philos));
+		return (freedi(NULL, rules, 0 ,NULL));
+	memset((*rules)->list, 0, (sizeof(int) * ((*rules)->nb_philos + 1)));
+	(*rules)->forks_list = malloc(sizeof(int) * (*rules)->nb_philos);
+	if (!(*rules)->forks_list)
+		return (freedi(NULL, rules, 0 ,NULL));
+	memset((*rules)->forks_list, 0, (sizeof(int) * (*rules)->nb_philos));
 	if (argc == 6)
 		(*rules)->must_eat = ft_atoi(argv[4]);
+	if (argc == 6 && (*rules)->must_eat <= 0)
+		return (freedi(NULL, rules, 0 ,NULL));
 	if (memory_reserve(philos, rules) == -1)
 		return (-1);
 	if (start_thread(philos, *rules) == -1)

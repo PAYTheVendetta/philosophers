@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:28:31 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/22 20:18:39 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/02 18:20:39 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@ int	main(int argc, char *argv[])
 	rules = malloc(sizeof(t_rules));
 	if (!rules)
 		return (freedi(NULL, NULL, 0, NULL));
-	if (validate(argv, argc))
-		return (0);
+	memset(rules, '\0', sizeof(t_rules));
 	if (init(&argv[1], &rules, argc, &philos) == -1)
 		return (0);
 	n = rules->nb_philos - 1;

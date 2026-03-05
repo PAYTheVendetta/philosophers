@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:50:36 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/26 18:18:27 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/02 20:32:44 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ void	destroy_mutex(t_rules **rules, t_clear *clear)
 		pthread_mutex_destroy((*rules)->dead_mutex);
 	if (clear->waiter_mutex_inited == 1 && *rules != NULL)
 		pthread_mutex_destroy((*rules)->waiter_mutex);
-	while (n_forks > 0 && *rules != NULL)
-		pthread_mutex_destroy(&(*rules)->forks[--n_forks]);
+	while (n_forks >= 0 && *rules != NULL)
+		pthread_mutex_destroy(&(*rules)->forks[n_forks--]);
 }
 
 int	freedi(t_phio **philos, t_rules **rules, int n_thread, t_clear *clear)
@@ -45,15 +45,17 @@ int	freedi(t_phio **philos, t_rules **rules, int n_thread, t_clear *clear)
 		pthread_join((*philos)[n_thread-- - 1].thread, NULL);
 	if (rules != NULL && clear != NULL)
 		destroy_mutex(rules, clear);
-	if (rules != NULL && (*rules)->print_mutex != NULL)
+	if (rules != NULL && *rules != NULL && (*rules)->print_mutex != NULL)
 		safe_free((void **)&(*rules)->print_mutex);
-	if (rules != NULL && (*rules)->dead_mutex != NULL)
+	if (rules != NULL && *rules != NULL && (*rules)->dead_mutex != NULL)
 		safe_free((void **)&(*rules)->dead_mutex);
-	if (rules != NULL && (*rules)->waiter_mutex != NULL)
+	if (rules != NULL && *rules != NULL && (*rules)->waiter_mutex != NULL)
 		safe_free((void **)&(*rules)->waiter_mutex);
-	if (rules != NULL && (*rules)->list != NULL)
+	if (rules != NULL && *rules != NULL && (*rules)->list != NULL)
 		safe_free((void **)&(*rules)->list);
-	if (rules != NULL && (*rules)->forks != NULL)
+	if (rules != NULL && *rules != NULL && (*rules)->forks_list != NULL)
+		safe_free((void **)&(*rules)->forks_list);
+	if (rules != NULL && *rules != NULL && (*rules)->forks != NULL)
 		safe_free((void **)&(*rules)->forks);
 	if (clear != NULL)
 		safe_free((void **)&clear);

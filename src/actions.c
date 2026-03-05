@@ -6,31 +6,24 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:47:01 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/26 19:00:22 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/05 15:54:00 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	modo_list(t_phio *philo)
+void	modo_list(t_phio *philo, int iter)
 {
-	int iter;
-
-	iter = 0;
 	while (iter < (philo->rules->nb_philos - 1))
 	{
-		pthread_mutex_lock(philo->rules->waiter_mutex);
 		if (philo->rules->list[iter + 1] != 0)
 			philo->rules->list[iter] = philo->rules->list[iter + 1];
 		else
 		{
 			philo->rules->list[iter] = philo->rules->list[iter + 1];
 			philo->rules->list[philo->rules->nb_philos - 1] = 0;
-			philo->rules->in_for_phase++;
-			pthread_mutex_unlock(philo->rules->waiter_mutex);
 			return ;
 		}
-		pthread_mutex_unlock(philo->rules->waiter_mutex);
 		iter++;
 	}
 }
@@ -97,34 +90,81 @@ int	take_forks(t_phio	*philo, int pick_or_drop)
 	return (0);
 }
 
+int	dont_annoy_ferst(t_phio *philo)
+{
+	static long time;
+	
+	if(philo->id == philo->rules->list[0])
+	{
+		time = philo->last_meal;
+		return (0);	
+	}
+	if(philo->id == ((philo->rules->list[0] % philo->rules->nb_philos) + 1)
+		|| philo->id == ((philo->rules->list[0] - 2 +philo->rules->nb_philos) % philo->rules->nb_philos + 1))
+		if (time - gettimeinmil() >= philo->rules->t_to_eat)
+			return (-1);
+	return (0);
+}
+
+int	check_list(t_phio *philo)
+{
+	static int	chec_next_list;
+	static int	chec_stoped_ferst;
+	
+	pthread_mutex_lock(philo->rules->waiter_mutex);
+	if ((philo->rules->list[chec_next_list] == philo->id && chec_stoped_ferst < 2)
+		|| (philo->rules->list[0] == philo->id && chec_stoped_ferst > 1))
+	{
+		if (*philo->id_left_fork == 0 && *philo->id_right_fork == 0 && dont_annoy_ferst(philo))
+		{
+			*philo->id_left_fork = 1;
+			*philo->id_right_fork = 1;
+			philo->rules->in_for_phase++;
+			if (philo->rules->list[0] == philo->id)
+				chec_stoped_ferst = 0;
+			if (philo->rules->list[0] != philo->id)
+				chec_stoped_ferst++;
+			modo_list(philo, chec_next_list);
+			chec_next_list = 0;
+			pthread_mutex_unlock(philo->rules->waiter_mutex);
+			return (0);
+		}
+		if (chec_next_list == (philo->rules->nb_philos - 1)
+			|| philo->rules->in_for_phase == philo->rules->nb_philos / 2)
+			chec_next_list = -1;
+		chec_next_list++;
+	}
+	pthread_mutex_unlock(philo->rules->waiter_mutex);
+	return (-1);
+}
 
 void	waiter(t_phio *philo, int acction)
 {
 	pthread_mutex_lock(philo->rules->waiter_mutex);
 	if (acction == 1)
 	{
-		if ((philo->rules->in_for_phase == philo->rules->nb_philos / 2
-			&& philo->rules->nb_philos != 1) || philo->rules->list[0] != 0)
+		pthread_mutex_unlock(philo->rules->waiter_mutex);
+		add_list(philo, philo->id);
+		while (1)
 		{
-			pthread_mutex_unlock(philo->rules->waiter_mutex);
-			add_list(philo, philo->id);
-			while (1)
+			pthread_mutex_lock(philo->rules->waiter_mutex);
+			if (philo->rules->in_for_phase < philo->rules->nb_philos / 2)
 			{
-				usleep(100);
-				pthread_mutex_lock(philo->rules->waiter_mutex);
-				if (philo->rules->list[0] == philo->id
-					&& philo->rules->in_for_phase < philo->rules->nb_philos / 2)
-				{
-					pthread_mutex_unlock(philo->rules->waiter_mutex);
-					modo_list(philo);
-					return ;
-				}
 				pthread_mutex_unlock(philo->rules->waiter_mutex);
+				if (!check_list(philo))
+					return ;
+				usleep(100);
+				continue ;
 			}
+			pthread_mutex_unlock(philo->rules->waiter_mutex);
+			usleep(100);
 		}
-		philo->rules->in_for_phase++;
 	}
 	else
+	{
+		*philo->id_left_fork = 0;
+		*philo->id_right_fork = 0;
 		philo->rules->in_for_phase--;
+	}
 	pthread_mutex_unlock(philo->rules->waiter_mutex);
 }
