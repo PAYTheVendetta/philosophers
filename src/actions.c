@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:47:01 by aialonso          #+#    #+#             */
-/*   Updated: 2026/03/05 15:54:00 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/06 13:18:45 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,47 +92,46 @@ int	take_forks(t_phio	*philo, int pick_or_drop)
 
 int	dont_annoy_ferst(t_phio *philo)
 {
-	static long time;
+	static long mod_strict;
+	static long id_traker;
 	
+	if (id_traker != philo->rules->list[0])
+		mod_strict = 0;
 	if(philo->id == philo->rules->list[0])
 	{
-		time = philo->last_meal;
-		return (0);	
+		id_traker = philo->id;
+		pthread_mutex_lock(philo->rules->dead_mutex);
+		if ((philo->rules->t_to_dead - (gettimeinmil() - philo->last_meal)) > philo->rules->t_to_eat + 10)
+			mod_strict = 1;
+		pthread_mutex_unlock(philo->rules->dead_mutex);
+		return (0);
 	}
 	if(philo->id == ((philo->rules->list[0] % philo->rules->nb_philos) + 1)
 		|| philo->id == ((philo->rules->list[0] - 2 +philo->rules->nb_philos) % philo->rules->nb_philos + 1))
-		if (time - gettimeinmil() >= philo->rules->t_to_eat)
+		if (mod_strict == 1)
 			return (-1);
 	return (0);
 }
 
 int	check_list(t_phio *philo)
 {
-	static int	chec_next_list;
-	static int	chec_stoped_ferst;
-	
 	pthread_mutex_lock(philo->rules->waiter_mutex);
-	if ((philo->rules->list[chec_next_list] == philo->id && chec_stoped_ferst < 2)
-		|| (philo->rules->list[0] == philo->id && chec_stoped_ferst > 1))
+	if (philo->rules->list[philo->rules->chec_next_list] == philo->id)
 	{
-		if (*philo->id_left_fork == 0 && *philo->id_right_fork == 0 && dont_annoy_ferst(philo))
+		if (*philo->id_left_fork == 0 && *philo->id_right_fork == 0 && dont_annoy_ferst(philo) == 0)
 		{
 			*philo->id_left_fork = 1;
 			*philo->id_right_fork = 1;
 			philo->rules->in_for_phase++;
-			if (philo->rules->list[0] == philo->id)
-				chec_stoped_ferst = 0;
-			if (philo->rules->list[0] != philo->id)
-				chec_stoped_ferst++;
-			modo_list(philo, chec_next_list);
-			chec_next_list = 0;
+			modo_list(philo, philo->rules->chec_next_list);
+			philo->rules->chec_next_list = 0;
 			pthread_mutex_unlock(philo->rules->waiter_mutex);
 			return (0);
 		}
-		if (chec_next_list == (philo->rules->nb_philos - 1)
+		if (philo->rules->chec_next_list == (philo->rules->nb_philos - 1)
 			|| philo->rules->in_for_phase == philo->rules->nb_philos / 2)
-			chec_next_list = -1;
-		chec_next_list++;
+			philo->rules->chec_next_list = -1;
+		philo->rules->chec_next_list++;
 	}
 	pthread_mutex_unlock(philo->rules->waiter_mutex);
 	return (-1);

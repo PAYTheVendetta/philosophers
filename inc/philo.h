@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 12:29:23 by aialonso          #+#    #+#             */
-/*   Updated: 2026/03/02 20:12:25 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/06 12:33:37 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_rules
 	int				*list;
 	int				*forks_list;
 	long			start_time;
+	int				chec_next_list;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*print_mutex;
 	pthread_mutex_t	*waiter_mutex;

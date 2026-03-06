@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:29:01 by aialonso          #+#    #+#             */
-/*   Updated: 2026/02/26 19:03:39 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/06 12:39:31 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 void	eat(t_phio *philo)
 {
-	waiter(philo, 1);
+	if (philo->rules->nb_philos > 1)
+		waiter(philo, 1);
 	if (take_forks(philo, 1))
 	{
 		waiter(philo, 0);

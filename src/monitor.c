@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:36:09 by aialonso          #+#    #+#             */
-/*   Updated: 2026/03/02 19:22:15 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/06 13:03:22 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ void	check_monitor(t_phio *philos)
 		if (count_eating(&philos, iter) == 1)
 		{
 			iter++;
-			pthread_mutex_lock(philos->rules->dead_mutex);
 			continue ;
 		}
 		check_dead(&philos[iter]);
