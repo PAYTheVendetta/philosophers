@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:49:36 by aialonso          #+#    #+#             */
-/*   Updated: 2026/03/02 18:24:47 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/06 18:03:36 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,31 +19,31 @@ int	ft_isdigit(int c)
 	return (0);
 }
 
-long	ft_atoi(char *str)
+long	ft_atoi(const char *nptr)
 {
-	long	n[4];
+	int		signo;
+	int		num;
 
-	n[0] = 0;
-	n[1] = 1;
-	n[2] = 0;
-	while ((str[n[0]] >= 9 && str[n[0]] <= 13) || str[n[0]] == 32)
-		n[0]++;
-	if (str[n[0]] == '-' || str[n[0]] == '+')
+	signo = 1;
+	num = 0;
+	while ((*nptr >= 9 && *nptr <= 13) || *nptr == 32)
+		nptr++;
+	if (*nptr == '-' || *nptr == '+')
 	{
-		if (str[n[0]] == ('-'))
-			n[1] = n[1] * -1;
-		n[0]++;
+		if (*nptr == '-')
+			signo = signo * -1;
+		nptr++;
 	}
-	while (ft_isdigit(str[n[0]]))
+	while (*nptr >= '0' && *nptr <= '9')
 	{
-		if (!ft_isdigit(str[n[0] + 1]))
+		if (!(*(nptr + 1) >= '0' && *(nptr + 1) <= '9'))
 		{
-			n[2] = n[2] * 10 + (str[n[0]] - '0');
-			return (n[1] * n[2]);
+			num = num * 10 + (*nptr - '0');
+			return (signo * num);
 		}
 		else
-			n[2] = n[2] * 10 + (str[n[0]] - '0');
-		n[0]++;
+			num = num * 10 + (*nptr - '0');
+		nptr++;
 	}
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:29:01 by aialonso          #+#    #+#             */
-/*   Updated: 2026/03/06 12:39:31 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/06 18:01:32 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,8 @@ void	eat(t_phio *philo)
 void	*live(void *arg)
 {
 	t_phio	*philo;
-	int		n;
 
 	philo = (t_phio *)arg;
-	n = 0;
 	if (philo->id % 2 == 0)
 		usleep(3000);
 	pthread_mutex_lock(philo->rules->dead_mutex);
@@ -57,7 +55,6 @@ void	*live(void *arg)
 		}
 		pthread_mutex_unlock(philo->rules->dead_mutex);
 		eat(philo);
-		n++;
 		pthread_mutex_lock(philo->rules->dead_mutex);
 	}
 	pthread_mutex_unlock(philo->rules->dead_mutex);

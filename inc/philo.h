@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 12:29:23 by aialonso          #+#    #+#             */
-/*   Updated: 2026/03/06 12:33:37 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/06 18:04:13 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,6 @@ typedef struct s_rules
 	int				in_for_phase;
 	int				finished;
 	int				*list;
-	int				*forks_list;
-	long			start_time;
-	int				chec_next_list;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*print_mutex;
 	pthread_mutex_t	*waiter_mutex;
@@ -62,16 +59,14 @@ typedef struct s_phio
 	long			last_meal;
 	int				meals_eaten;
 	pthread_mutex_t	*left_fork;
-	int				*id_left_fork;
 	pthread_mutex_t	*right_fork;
-	int				*id_right_fork;
 	t_rules			*rules;
 	t_clear			*clear;
 }	t_phio;
 
 /* Parse */
 
-long	ft_atoi(char *str);
+long	ft_atoi(const char *nptr);
 int		validate(char **argv, int argc);
 int		ft_isdigit(int c);
 

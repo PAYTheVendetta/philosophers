@@ -18,8 +18,10 @@ INC_PUS = inc
 SOURCES = $(addprefix $(ADDS)/,\
 			main.c\
 			actions.c\
+			actions_waiter.c\
 			cleanup.c\
 			init.c\
+			init_threads.c\
 			monitor.c\
 			parse.c\
 			routine.c\

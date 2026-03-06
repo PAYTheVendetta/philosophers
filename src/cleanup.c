@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:50:36 by aialonso          #+#    #+#             */
-/*   Updated: 2026/03/02 20:32:44 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/06 18:16:18 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,20 @@ void	destroy_mutex(t_rules **rules, t_clear *clear)
 		pthread_mutex_destroy(&(*rules)->forks[n_forks--]);
 }
 
+void	free_rules_memory(t_rules **rules)
+{
+	if (rules != NULL && *rules != NULL && (*rules)->print_mutex != NULL)
+		safe_free((void **)&(*rules)->print_mutex);
+	if (rules != NULL && *rules != NULL && (*rules)->dead_mutex != NULL)
+		safe_free((void **)&(*rules)->dead_mutex);
+	if (rules != NULL && *rules != NULL && (*rules)->waiter_mutex != NULL)
+		safe_free((void **)&(*rules)->waiter_mutex);
+	if (rules != NULL && *rules != NULL && (*rules)->list != NULL)
+		safe_free((void **)&(*rules)->list);
+	if (rules != NULL && *rules != NULL && (*rules)->forks != NULL)
+		safe_free((void **)&(*rules)->forks);
+}
+
 int	freedi(t_phio **philos, t_rules **rules, int n_thread, t_clear *clear)
 {
 	if (rules != NULL && n_thread != 0 && *rules != NULL)
@@ -45,18 +59,7 @@ int	freedi(t_phio **philos, t_rules **rules, int n_thread, t_clear *clear)
 		pthread_join((*philos)[n_thread-- - 1].thread, NULL);
 	if (rules != NULL && clear != NULL)
 		destroy_mutex(rules, clear);
-	if (rules != NULL && *rules != NULL && (*rules)->print_mutex != NULL)
-		safe_free((void **)&(*rules)->print_mutex);
-	if (rules != NULL && *rules != NULL && (*rules)->dead_mutex != NULL)
-		safe_free((void **)&(*rules)->dead_mutex);
-	if (rules != NULL && *rules != NULL && (*rules)->waiter_mutex != NULL)
-		safe_free((void **)&(*rules)->waiter_mutex);
-	if (rules != NULL && *rules != NULL && (*rules)->list != NULL)
-		safe_free((void **)&(*rules)->list);
-	if (rules != NULL && *rules != NULL && (*rules)->forks_list != NULL)
-		safe_free((void **)&(*rules)->forks_list);
-	if (rules != NULL && *rules != NULL && (*rules)->forks != NULL)
-		safe_free((void **)&(*rules)->forks);
+	free_rules_memory(rules);
 	if (clear != NULL)
 		safe_free((void **)&clear);
 	if (rules != NULL && *rules != NULL)
