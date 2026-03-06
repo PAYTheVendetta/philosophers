@@ -6,7 +6,7 @@
 /*   By: aialonso <aialonso@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/17 17:28:43 by aialonso          #+#    #+#             */
-/*   Updated: 2026/03/06 18:22:03 by aialonso         ###   ########.fr       */
+/*   Updated: 2026/03/06 18:56:46 by aialonso         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,16 @@ static int	init_rules_values(t_rules **rules, int argc, char **argv)
 		return (freedi(NULL, rules, 0, NULL));
 	(*rules)->nb_philos = ft_atoi(argv[0]);
 	if ((*rules)->nb_philos <= 0)
-		return (freedi(NULL, rules, 0 ,NULL));
+		return (freedi(NULL, rules, 0, NULL));
 	(*rules)->t_to_dead = ft_atoi(argv[1]);
 	if ((*rules)->t_to_dead <= 0)
-		return (freedi(NULL, rules, 0 ,NULL));
+		return (freedi(NULL, rules, 0, NULL));
 	(*rules)->t_to_eat = ft_atoi(argv[2]);
 	if ((*rules)->t_to_eat <= 0)
-		return (freedi(NULL, rules, 0 ,NULL));
+		return (freedi(NULL, rules, 0, NULL));
 	(*rules)->t_to_sleep = ft_atoi(argv[3]);
 	if ((*rules)->t_to_sleep <= 0)
-		return (freedi(NULL, rules, 0 ,NULL));
+		return (freedi(NULL, rules, 0, NULL));
 	return (0);
 }
 
@@ -61,12 +61,12 @@ int	init(char **argv, t_rules **rules, int argc, t_phio	**philos)
 	(*rules)->must_eat = -1;
 	(*rules)->list = malloc(sizeof(int) * ((*rules)->nb_philos + 1));
 	if (!(*rules)->list)
-		return (freedi(NULL, rules, 0 ,NULL));
+		return (freedi(NULL, rules, 0, NULL));
 	memset((*rules)->list, 0, (sizeof(int) * ((*rules)->nb_philos + 1)));
 	if (argc == 6)
 		(*rules)->must_eat = ft_atoi(argv[4]);
 	if (argc == 6 && (*rules)->must_eat <= 0)
-		return (freedi(NULL, rules, 0 ,NULL));
+		return (freedi(NULL, rules, 0, NULL));
 	if (memory_reserve(philos, rules) == -1)
 		return (-1);
 	if (start_thread(philos, *rules) == -1)
